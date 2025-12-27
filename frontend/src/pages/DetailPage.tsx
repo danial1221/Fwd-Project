@@ -117,7 +117,7 @@ const DetailPage = () => {
     });
   };
 
-  const onCheckout = async (userFormData: UserFormData) => {
+  const onCheckout = async (userFormData: UserFormData, paymentMethod: "stripe" | "cod") => {
     if (!restaurant) {
       return;
     }
@@ -138,9 +138,17 @@ const DetailPage = () => {
       },
     };
 
-    const data = await createCheckoutSession(checkoutData);
-    sessionStorage.removeItem(`cartItems-${restaurantId}`);
-    window.location.href = data.url;
+    if (paymentMethod === "stripe") {
+      const data = await createCheckoutSession(checkoutData);
+      sessionStorage.removeItem(`cartItems-${restaurantId}`);
+      window.location.href = data.url;
+    } else {
+      // COD: Create order directly without Stripe
+      // TODO: Create API endpoint for COD orders
+      alert("COD order placed successfully! (Feature coming soon)");
+      sessionStorage.removeItem(`cartItems-${restaurantId}`);
+      window.location.href = "/order-status";
+    }
   };
 
   if (isLoading || !restaurant) {
