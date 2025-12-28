@@ -111,6 +111,49 @@ const createCheckoutSession = async (req: Request, res: Response) => {
   }
 };
 
+const createCODOrder = async (req: Request, res: Response) => {
+  try {
+    const checkoutSessionRequest: CheckoutSessionRequest = req.body;
+
+    const restaurant = await Restaurant.findById(
+      checkoutSessionRequest.restaurantId
+    );
+
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
+
+    // Calculate total amount
+    let totalAmount = 0;
+    checkoutSessionRequest.cartItems.forEach((cartItem) => {
+      const menuItem = restaurant.menuItems.find(
+        (item) => item._id.toString() === cartItem.menuItemId.toString()
+      );
+      if (menuItem) {
+        totalAmount += menuItem.price * parseInt(cartItem.quantity);
+      }
+    });
+    // Add delivery price
+    totalAmount += restaurant.deliveryPrice;
+
+    const newOrder = new Order({
+      restaurant: restaurant,
+      user: req.userId,
+      status: "placed",
+      deliveryDetails: checkoutSessionRequest.deliveryDetails,
+      cartItems: checkoutSessionRequest.cartItems,
+      totalAmount: totalAmount,
+      createdAt: new Date(),
+    });
+
+    await newOrder.save();
+    res.status(201).json({ orderId: newOrder._id, message: "COD order created successfully" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const createLineItems = (
   checkoutSessionRequest: CheckoutSessionRequest,
   menuItems: MenuItemType[]
@@ -176,5 +219,6 @@ const createSession = async (
 export default {
   getMyOrders,
   createCheckoutSession,
+  createCODOrder,
   stripeWebhookHandler,
 };

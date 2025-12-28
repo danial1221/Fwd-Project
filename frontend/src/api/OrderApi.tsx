@@ -103,3 +103,48 @@ export const useCreateCheckoutSession = () => {
     isLoading,
   };
 };
+
+export const useCreateCODOrder = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const createCODOrderRequest = async (
+    checkoutSessionRequest: CheckoutSessionRequest
+  ) => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/order/checkout/create-cod-order`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(checkoutSessionRequest),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Unable to create COD order");
+    }
+
+    return response.json();
+  };
+
+  const {
+    mutateAsync: createCODOrder,
+    isLoading,
+    error,
+    reset,
+  } = useMutation(createCODOrderRequest);
+
+  if (error) {
+    toast.error(error.toString());
+    reset();
+  }
+
+  return {
+    createCODOrder,
+    isLoading,
+  };
+};

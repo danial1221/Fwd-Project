@@ -13,6 +13,13 @@ router.post(
   OrderController.createCheckoutSession
 );
 
+router.post(
+  "/checkout/create-cod-order",
+  jwtCheck,
+  jwtParse,
+  OrderController.createCODOrder
+);
+
 router.post("/checkout/webhook", OrderController.stripeWebhookHandler);
 
 export default router;

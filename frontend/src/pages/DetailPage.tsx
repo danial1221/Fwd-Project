@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import { MenuItem as MenuItemType } from "../types";
 import CheckoutButton from "@/components/CheckoutButton";
 import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
-import { useCreateCheckoutSession } from "@/api/OrderApi";
+import { useCreateCheckoutSession, useCreateCODOrder } from "@/api/OrderApi";
 
 export type CartItem = {
   _id: string;
@@ -23,6 +23,7 @@ const DetailPage = () => {
   const { restaurant, isLoading } = useGetRestaurant(restaurantId);
   const { createCheckoutSession, isLoading: isCheckoutLoading } =
     useCreateCheckoutSession();
+  const { createCODOrder, isLoading: isCODLoading } = useCreateCODOrder();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
@@ -144,8 +145,7 @@ const DetailPage = () => {
       window.location.href = data.url;
     } else {
       // COD: Create order directly without Stripe
-      // TODO: Create API endpoint for COD orders
-      alert("COD order placed successfully! (Feature coming soon)");
+      await createCODOrder(checkoutData);
       sessionStorage.removeItem(`cartItems-${restaurantId}`);
       window.location.href = "/order-status";
     }
