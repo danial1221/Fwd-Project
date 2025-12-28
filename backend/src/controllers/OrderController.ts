@@ -124,9 +124,11 @@ const createCODOrder = async (req: Request, res: Response) => {
     }
 
     // Calculate total amount
-    let totalAmount = 0;
+    let totalAmount: number = 0;
+    const menuItems = restaurant.menuItems as any[];
+    
     checkoutSessionRequest.cartItems.forEach((cartItem) => {
-      const menuItem = restaurant.menuItems.find(
+      const menuItem = menuItems.find(
         (item) => item._id.toString() === cartItem.menuItemId.toString()
       );
       if (menuItem) {
