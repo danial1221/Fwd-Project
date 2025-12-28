@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import myRestaurantRoute from "./routes/MyRestaurantRoute";
 import restaurantRoute from "./routes/RestaurantRoute";
 import orderRoute from "./routes/OrderRoute";
+import path from "path";
 
 mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING as string)
@@ -34,6 +35,14 @@ app.use("/api/my/user", myUserRoute);
 app.use("/api/my/restaurant", myRestaurantRoute);
 app.use("/api/restaurant", restaurantRoute);
 app.use("/api/order", orderRoute);
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+
+// Serve index.html for all other routes (SPA support)
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+});
 
 const PORT = process.env.PORT || 7000;
 
