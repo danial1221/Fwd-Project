@@ -134,7 +134,7 @@ const createCODOrder = async (req: Request, res: Response) => {
       }
     });
     // Add delivery price
-    totalAmount += restaurant.deliveryPrice;
+    totalAmount += restaurant.deliveryPrice as number;
 
     const newOrder = new Order({
       restaurant: restaurant,
