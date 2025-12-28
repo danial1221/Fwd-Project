@@ -23,7 +23,7 @@ const DetailPage = () => {
   const { restaurant, isLoading } = useGetRestaurant(restaurantId);
   const { createCheckoutSession, isLoading: isCheckoutLoading } =
     useCreateCheckoutSession();
-  const { createCODOrder, isLoading: isCODLoading } = useCreateCODOrder();
+  const { createCODOrder } = useCreateCODOrder();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
